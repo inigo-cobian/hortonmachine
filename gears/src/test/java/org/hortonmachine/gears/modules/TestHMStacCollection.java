@@ -1,5 +1,12 @@
 package org.hortonmachine.gears.modules;
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.hortonmachine.gears.io.stac.HMStacCollection;
 import org.hortonmachine.gears.io.stac.HMStacItem;
 import org.hortonmachine.gears.io.stac.HMStacManager;
@@ -104,4 +111,24 @@ public class TestHMStacCollection extends HMTestCase {
                 .searchItems()
         );
     }
+
+    public void testSearchItemWithS3Credentials() throws Exception {
+        HMStacCollection collection = manager.getCollectionById("io-lulc-annual-v02");
+        BasicAWSCredentials credentials = new BasicAWSCredentials("amazonAccessId", "amazonSecretKey");
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withRegion(Regions.DEFAULT_REGION)
+                .build();
+        Instant start = Instant.ofEpochMilli(1514764800000L); // 2018-01-01
+        Instant end = start.plus(Duration.ofDays(10));
+        Polygon bboxPolygon = gf.createPolygon(createBbox(0.0, 0.0, 10.0, 10.0));
+
+        List<HMStacItem> items = collection.setTimestampFilter(Date.from(start), Date.from(end))
+                .setS3Client(s3Client)
+                .setGeometryFilter(bboxPolygon)
+                .searchItems();
+
+        assertTrue(!items.isEmpty());
+    }
+
 }

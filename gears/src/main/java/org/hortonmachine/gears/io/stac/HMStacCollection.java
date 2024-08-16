@@ -145,6 +145,19 @@ public class HMStacCollection {
         return this;
     }
 
+    /**
+     * Set S3 client for search query;
+     *
+     * @param s3Client
+     * @return the current collection.
+     */
+    public HMStacCollection setS3Client(AmazonS3 s3Client) {
+        if (search == null)
+            search = new SearchQuery();
+        this.s3Client = s3Client;
+        return this;
+    }
+
     private SimpleFeatureCollection queryFeatureCollection() throws IOException {
         try {
             return stacClient.search(search, STACClient.SearchMode.POST);
@@ -246,7 +259,8 @@ public class HMStacCollection {
                         .setNoValue(asset.getNoValue()).build();
             }
 
-            GridCoverage2D readRaster = asset.readRaster(readRegion);
+            GridCoverage2D readRaster = s3Client == null ?
+                    asset.readRaster(readRegion) : asset.readRaster(readRegion, s3Client);
             outRaster.mapRaster(null, HMRaster.fromGridCoverage(readRaster), mergeMode);
             pm.worked(1);
         }
