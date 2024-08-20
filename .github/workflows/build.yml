@@ -3,7 +3,6 @@ name: Build and Release Snapshot
 on:
   push:
     branches:
-      - master
 
 jobs:
   build-and-release:
