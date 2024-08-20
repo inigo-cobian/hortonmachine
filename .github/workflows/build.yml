@@ -9,6 +9,8 @@ jobs:
   build-and-release:
     runs-on: ubuntu-22.04
 
+    if: github.ref == 'refs/heads/master
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -44,3 +46,26 @@ jobs:
           -P release \
           -Dmaven.javadoc.skip=true \
           -Dgpg.skip=false
+
+  build-and-test:
+    runs-on: ubuntu-22.04
+
+    if: startsWith(github.ref_name, 'test-')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+          cache: 'maven'
+
+      - name: Build and Test Branch
+        run: |
+          mvn --no-transfer-progress \
+            --batch-mode \
+            clean install \
+            -Dmaven.javadoc.skip=true
