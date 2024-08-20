@@ -49,8 +49,6 @@ jobs:
   build-and-test:
     runs-on: ubuntu-22.04
 
-    if: startsWith(github.ref_name, 'bad')
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
