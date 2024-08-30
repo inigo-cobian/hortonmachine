@@ -55,7 +55,7 @@
 
 		<performRelease>false</performRelease>
 
-		<aws.version>1.12.730</aws.version>
+		<aws.version>2.27.15</aws.version>
 	</properties>
 
 
@@ -894,10 +894,49 @@
 				<scope>test</scope>
 			</dependency>
 
+			<!-- AWS dependencies -->
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-core</artifactId>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>s3</artifactId>
 				<version>${aws.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>software.amazon.awssdk</groupId>
+						<artifactId>netty-nio-client</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>software.amazon.awssdk</groupId>
+						<artifactId>apache-client</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${aws.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>sso</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>ssoidc</artifactId>
+				<version>${aws.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>apache-client</artifactId>
+				<version>${aws.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 		</dependencies>
