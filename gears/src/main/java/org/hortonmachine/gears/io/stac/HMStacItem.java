@@ -136,6 +136,22 @@ public class HMStacItem {
         return ETimeUtilities.INSTANCE.TIME_FORMATTER_UTC.format(creationDateCet);
     }
 
+    public Date getDateCet() {
+        return dateCet;
+    }
+
+    public Date getStart() {
+        return start;
+    }
+
+    public Date getEnd() {
+        return end;
+    }
+
+    public Date getCreationDateCet() {
+        return creationDateCet;
+    }
+
     /**
      * @return the data geometry in the data CRS (from {@link #getEpsg()}).
      */
