@@ -1,11 +1,9 @@
 package org.hortonmachine.gears.io.stac;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.github.davidmoten.aws.lw.client.Client;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -49,6 +47,7 @@ public class HMStacCollection {
     private Collection collection;
     private SearchQuery search;
     private IHMProgressMonitor pm;
+    private Client s3Client;
 
     HMStacCollection( STACClient stacClient, Collection collection, IHMProgressMonitor pm ) {
         this.stacClient = stacClient;
@@ -126,6 +125,22 @@ public class HMStacCollection {
         return this;
     }
 
+    /**
+     * Set the S3 credentials
+     *
+     * @param accessKey S3 accessKey
+     * @param secretKey S3 secretKey
+     * @param region AWS bucket region
+     */
+    public HMStacCollection setS3Credentials( String accessKey, String secretKey, Optional<String> region ) {
+        if (region.isPresent()) {
+            this.s3Client = Client.s3().region(region.get()).accessKey(accessKey).secretKey(secretKey).build();
+            return this;
+        }
+        this.s3Client = Client.s3().regionNone().accessKey(accessKey).secretKey(secretKey).build();
+        return this;
+    }
+
     public List<HMStacItem> searchItems() throws Exception {
         if (search == null)
             search = new SearchQuery();
@@ -164,7 +179,7 @@ public class HMStacCollection {
      * @return the final raster.
      * @throws Exception
      */
-    public static HMRaster readRasterBandOnRegion( RegionMap latLongRegionMap, String bandName, List<HMStacItem> items,
+    public HMRaster readRasterBandOnRegion( RegionMap latLongRegionMap, String bandName, List<HMStacItem> items,
             boolean allowTransform, MergeMode mergeMode, IHMProgressMonitor pm ) throws Exception {
 
         if (!allowTransform) {
@@ -218,6 +233,9 @@ public class HMStacCollection {
                         .setNoValue(asset.getNoValue()).build();
             }
 
+            if (s3Client != null && asset.getAssetUrl().startsWith("s3://")) {
+                asset = asset.setCredentials(s3Client);
+            }
             GridCoverage2D readRaster = asset.readRaster(readRegion);
             outRaster.mapRaster(null, HMRaster.fromGridCoverage(readRaster), mergeMode);
             pm.worked(1);
