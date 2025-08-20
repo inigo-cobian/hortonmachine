@@ -55,8 +55,6 @@
 		<postgresql.jdbc.version>42.4.1</postgresql.jdbc.version>
 
 		<performRelease>false</performRelease>
-
-		<aws.version>1.12.730</aws.version>
 	</properties>
 
 
@@ -896,9 +894,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>com.amazonaws</groupId>
-				<artifactId>aws-java-sdk-core</artifactId>
-				<version>${aws.version}</version>
+				<groupId>com.github.davidmoten</groupId>
+				<artifactId>aws-lightweight-client-java</artifactId>
+				<version>0.1.23</version>
 			</dependency>
 
 		</dependencies>
